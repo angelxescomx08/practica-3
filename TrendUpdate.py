@@ -11,14 +11,14 @@ def borrarPantalla():
     elif os.name == "ce" or os.name == "nt" or os.name == "dos":
         os.system("cls")
 
-def monitorear(comunidad:str,ip:str,oid:str):
+def monitorear(comunidad:str,ip:str):
     sistema = consultaSNMP(comunidad,ip,"1.3.6.1.2.1.1.1.0")
     nombre = consultaSNMP(comunidad,ip,"1.3.6.1.2.1.1.5.0")
     carga_CPU = 0
     RAM_Uso = 0
     DISCO_Uso = 0
     TOTAL_RAM = int(consultaSNMP(comunidad,ip,'1.3.6.1.4.1.2021.4.5.0'))
-    #TOTAL_DISCO = int(consultaSNMP(comunidad,ip,'1.3.6.1.4.1.2021.9.1'))
+    #TOTAL_DISCO = int(consultaSNMP(comunidad,ip,'1.3.6.1.4.1.2021.9.1.9'))
     factorMBaGB = 1024**2
 
     while 1:
@@ -46,5 +46,6 @@ def monitorear(comunidad:str,ip:str,oid:str):
         rrdtool.update('trend.rrd', valor)
         rrdtool.dump('trend.rrd','trend.xml')
 
-        deteccion(0)
+        msg = deteccion(30)
+        print(msg[0])
         time.sleep(1)

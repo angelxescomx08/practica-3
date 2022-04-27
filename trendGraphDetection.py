@@ -9,7 +9,6 @@ def deteccion(segundos:int):
     ultima_lectura = int(rrdtool.last("trend.rrd"))
     tiempo_final = ultima_lectura
     tiempo_inicial = tiempo_final - segundos
-
     ret = rrdtool.graphv( "deteccion.png",
                         "--start",str(tiempo_inicial),
                         "--end",str(tiempo_final),
@@ -25,15 +24,20 @@ def deteccion(segundos:int):
                         "VDEF:cargaSTDEV=cargaCPU,STDEV",
                         "VDEF:cargaLAST=cargaCPU,LAST",
 
-                        "CDEF:umbral5=cargaCPU,5,LT,0,cargaCPU,IF",
+                        "CDEF:umbral6=cargaCPU,6,LT,0,cargaCPU,IF",
                         "AREA:cargaCPU#00FF00:Carga del CPU",
-                        "AREA:umbral5#FF9F00:Carga CPU mayor que 5",
-                        "HRULE:5#FF0000:Umbral 1 - 5%",
+                        "AREA:umbral6#FF9F00:Carga CPU mayor que 6",
+                        "HRULE:6#FF0000:Umbral 1 - 6%",
 
-                        "CDEF:umbral3=cargaCPU,3,LT,0,cargaCPU,IF",
+                        "CDEF:umbral8=cargaCPU,8,LT,0,cargaCPU,IF",
                         "AREA:cargaCPU#0000FF:Carga del CPU",
-                        "AREA:umbral3#FF9FFF:Carga CPU mayor que 3",
-                        "HRULE:3#00FFFF:Umbral 3%",
+                        "AREA:umbral8#FF9FFF:Carga CPU mayor que 8",
+                        "HRULE:8#00FFFF:Umbral 8%",
+
+                        "CDEF:umbral10=cargaCPU,10,LT,0,cargaCPU,IF",
+                        "AREA:cargaCPU#0000FF:Carga del CPU",
+                        "AREA:umbral10#FF9FFF:Carga CPU mayor que 10",
+                        "HRULE:10#00FFFF:Umbral 10%",
 
                         "PRINT:cargaLAST:%6.2lf",
                         "GPRINT:cargaMIN:%6.2lf %SMIN",
@@ -42,6 +46,20 @@ def deteccion(segundos:int):
     #print (ret)
 
     ultimo_valor=float(ret['print[0]'])
-    if ultimo_valor>4:
-        send_alert_attached("Sobrepasa Umbral línea base")
-        print("Sobrepasa Umbral línea base")
+
+    if ultimo_valor>8:
+        send_alert_attached("Sobrepasa Umbral línea base de 10")
+        #print("Sobrepasa Umbral línea base de 10")
+        return 'Sobrepasa Umbral línea base de 10',ultimo_valor,ret
+
+    if ultimo_valor>8:
+        send_alert_attached("Sobrepasa Umbral línea base de 8")
+        #print("Sobrepasa Umbral línea base de 8")
+        return 'Sobrepasa Umbral línea base de 8',ultimo_valor,ret
+
+    if ultimo_valor>6:
+        send_alert_attached("Sobrepasa Umbral línea base de 6")
+        #print("Sobrepasa Umbral línea base de 6")
+        return 'Sobrepasa Umbral línea base de 6',ultimo_valor,ret
+
+    return 'CPU carga correcta',ultimo_valor,ret
